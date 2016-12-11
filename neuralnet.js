@@ -1,7 +1,7 @@
 function argmax(x) {
   var i = 0;
-  var idx = null;
-  var max = -100000000000; // an arbitrary small number
+  var idx;
+  var max = -Infinity;
   x.tolist().forEach(function(n, i) {
     if(n > max) {
       idx = i;
@@ -28,34 +28,47 @@ function clear() {
   ctx.fillRect(0, 0, 224, 224);
 }
 
-$(function() {
-  $("#btn").click(function() {
-    var canvas = document.getElementById('canvas');
-    var ctx = canvas.getContext("2d");
-    var image = ctx.getImageData(0, 0, 224, 224).data;
-    var list = new Array();
-    var i;
-    for (i = 0; i < image.length; i++) {
-      list.push(image[i]);
-    }
-    var image2 = nj.array(list);
-    var img = image2.reshape(224, 224, 4);
-    img = nj.images.resize(img, 28, 28);
-    img = nj.images.rgb2gray(img);
-    img = nj.ones(img.shape).multiply(255).subtract(img);
-    //
-    var transformed = document.getElementById('transformed');
-    nj.images.save(img, transformed);
+function dup_array_like(array_like) {
+  var list = new Array();
+  var i;
+  for (i = 0; i < array_like.length; i++) {
+    list.push(array_like[i]);
+  }
+  return list;
+}
 
-    var img2 = nj.divide(img, 255.0);
-    var img3 = img2.reshape(28 * 28);
-    console.log(img3.shape);
-    var a = argmax(predict(img3));
-    console.log(a);
-    // $('#result').text(a);
+function draw_probs(y) {
+  var i;
+  for (i = 0; i < 10; i++) {
+    $("#prob" + i).text(i + ": " + (y.get(i) * 100).toString().slice(0, 4) + "%");
+  }
+}
+
+function recognize() {
+  var ctx = $('#canvas')[0].getContext("2d");
+  var image = ctx.getImageData(0, 0, 224, 224).data;
+  // it doesn't work
+  // unless we copy image above to another array for some reason.
+  var img = nj.array(dup_array_like(image)).reshape(224, 224, 4);
+  img = nj.images.resize(img, 28, 28);
+  img = nj.images.rgb2gray(img);
+  img = nj.ones(img.shape).multiply(255).subtract(img);
+  var transformed = document.getElementById('transformed');
+  nj.images.save(img, transformed);
+  // normalization and serialization
+  var x = nj.divide(img, 255.0).reshape(28 * 28);
+  var y= predict(x);
+  draw_probs(y);
+  var a = argmax(y);
+  $('#result').text(a);
+}
+
+$(function() {
+  $("#btn_recognize").click(function() {
+    recognize();
   });
 
-  $("#clear").click(function() {
+  $("#btn_clear").click(function() {
     clear();
   });
 
@@ -69,6 +82,3 @@ $(function() {
 
   clear();
 });
-
-
-

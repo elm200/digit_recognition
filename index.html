@@ -1,18 +1,48 @@
 <html>
 <head>
-<title>number recognition</title>
+<title>Digit Recognition</title>
 <script src="./jquery.js"></script>
 <script src="./numjs.js"></script>
 <script src="./net_params.js"></script>
 <script src="./neuralnet.js"></script>
 </head>
 <body>
-<h1>number recognition</h1>
-<button id="btn">Recognize it!</button>
-<button id="clear">Clear</button>
-<div id="result"></div>
-<canvas id="canvas" width="224" height="224" style="border: 1px solid #000;"></canvas>
-<br>
-<canvas id="transformed" width="28" height="28" style="border: 1px solid #000;"></canvas>
+<h1>Digit Recognition</h1>
+<p>Draw a digit below and click on "Recognize":</p>
+<table>
+  <tr>
+    <td>
+      <canvas id="canvas" width="224" height="224" style="border: 1px solid #000;"></canvas>
+    </td>
+    <td>
+      <ul style="list-style-type: none">
+        <li id="prob0">0: 0%</li>
+        <li id="prob1">1: 0%</li>
+        <li id="prob2">2: 0%</li>
+        <li id="prob3">3: 0%</li>
+        <li id="prob4">4: 0%</li>
+        <li id="prob5">5: 0%</li>
+        <li id="prob6">6: 0%</li>
+        <li id="prob7">7: 0%</li>
+        <li id="prob8">8: 0%</li>
+        <li id="prob9">9: 0%</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <canvas id="transformed" width="28" height="28" style="border: 1px solid #000;"></canvas>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button id="btn_recognize">Recognize</button>
+      <button id="btn_clear">Clear</button>
+    </td>
+    <td>
+      Recognized: <span id="result" style="font-size: xx-large"></span>
+    </td>
+  </tr>
+</table>
 </body>
 </html>
