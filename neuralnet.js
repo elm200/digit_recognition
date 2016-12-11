@@ -47,8 +47,7 @@ function draw_probs(y) {
 function recognize() {
   var ctx = $('#canvas')[0].getContext("2d");
   var image = ctx.getImageData(0, 0, 224, 224).data;
-  // it doesn't work
-  // unless we copy image above to another array for some reason.
+  // it doesn't work unless we duplicate the image above for some reason.
   var img = nj.array(dup_array_like(image)).reshape(224, 224, 4);
   img = nj.images.resize(img, 28, 28);
   img = nj.images.rgb2gray(img);
