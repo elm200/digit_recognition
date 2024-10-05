@@ -1,79 +1,65 @@
-function argmax(x) {
-  var i = 0;
-  var idx;
-  var max = -Infinity;
-  x.tolist().forEach(function(n, i) {
-    if(n > max) {
+const argmax = (x) => {
+  let idx;
+  let max = -Infinity;
+  x.tolist().forEach((n, i) => {
+    if (n > max) {
       idx = i;
       max = n;
     }
-    i++;
   });
   return idx;
 };
 
-function predict(x) {
-  var a1 = nj.dot(x, net_params.w1).add(net_params.b1);
-  var z1 = nj.sigmoid(a1);
-  var a2 = nj.dot(z1, net_params.w2).add(net_params.b2);
-  var z2 = nj.sigmoid(a2);
-  var a3 = nj.dot(z2, net_params.w3).add(net_params.b3);
-  var z3 = nj.softmax(a3);
+const predict = (x) => {
+  const a1 = nj.dot(x, window.net_params.w1).add(window.net_params.b1);
+  const z1 = nj.sigmoid(a1);
+  const a2 = nj.dot(z1, window.net_params.w2).add(window.net_params.b2);
+  const z2 = nj.sigmoid(a2);
+  const a3 = nj.dot(z2, window.net_params.w3).add(window.net_params.b3);
+  const z3 = nj.softmax(a3);
   return z3;
-}
+};
 
-function clear() {
-  var ctx = $('#canvas')[0].getContext('2d');
+const clear = () => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, 224, 224);
-}
+};
 
-function dup_array_like(array_like) {
-  var list = new Array();
-  var i;
-  for (i = 0; i < array_like.length; i++) {
-    list.push(array_like[i]);
+const dupArrayLike = (arrayLike) => Array.from(arrayLike);
+
+const drawProbs = (y) => {
+  for (let i = 0; i < 10; i++) {
+    document.getElementById(`prob${i}`).textContent = `${i}: ${(y.get(i) * 100).toFixed(2)}%`;
   }
-  return list;
-}
+};
 
-function draw_probs(y) {
-  var i;
-  for (i = 0; i < 10; i++) {
-    $("#prob" + i).text(i + ": " + (y.get(i) * 100).toString().slice(0, 4) + "%");
-  }
-}
+const recognize = () => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const image = ctx.getImageData(0, 0, 224, 224).data;
+  const img = nj.array(dupArrayLike(image)).reshape(224, 224, 4);
+  const resizedImg = nj.images.resize(img, 28, 28);
+  const grayImg = nj.images.rgb2gray(resizedImg);
+  const invertedImg = nj.ones(grayImg.shape).multiply(255).subtract(grayImg);
+  const transformed = document.getElementById('transformed');
+  nj.images.save(invertedImg, transformed);
+  const x = nj.divide(invertedImg, 255.0).reshape(28 * 28);
+  const y = predict(x);
+  drawProbs(y);
+  const a = argmax(y);
+  document.getElementById('result').textContent = a;
+};
 
-function recognize() {
-  var ctx = $('#canvas')[0].getContext("2d");
-  var image = ctx.getImageData(0, 0, 224, 224).data;
-  // it doesn't work unless we duplicate the image above for some reason.
-  var img = nj.array(dup_array_like(image)).reshape(224, 224, 4);
-  img = nj.images.resize(img, 28, 28);
-  img = nj.images.rgb2gray(img);
-  img = nj.ones(img.shape).multiply(255).subtract(img);
-  var transformed = document.getElementById('transformed');
-  nj.images.save(img, transformed);
-  // normalization and serialization
-  var x = nj.divide(img, 255.0).reshape(28 * 28);
-  var y= predict(x);
-  draw_probs(y);
-  var a = argmax(y);
-  $('#result').text(a);
-}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn_recognize').addEventListener('click', recognize);
+  document.getElementById('btn_clear').addEventListener('click', clear);
 
-$(function() {
-  $("#btn_recognize").click(function() {
-    recognize();
-  });
-
-  $("#btn_clear").click(function() {
-    clear();
-  });
-
-  $('#canvas').on("mousemove", function(e) {
-    if(e.buttons === 1) {
-      var ctx = $('#canvas')[0].getContext('2d');
+  const canvas = document.getElementById('canvas');
+  canvas.addEventListener('mousemove', (e) => {
+    if (e.buttons === 1) {
+      const ctx = canvas.getContext('2d');
       ctx.fillStyle = 'black';
       ctx.fillRect(e.offsetX, e.offsetY, 12, 12);
     }
