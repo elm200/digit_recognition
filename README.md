@@ -1,4 +1,4 @@
 # digit_recognition
 Digit recognition in pure JavaScript
 
-Try https://digit-recognition-nn.herokuapp.com/
+Try https://elm200.github.io/digit_recognition/
