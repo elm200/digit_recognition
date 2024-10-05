@@ -4,6 +4,25 @@
     <script src="./numjs.js"></script>
     <script src="./net_params.js"></script>
     <script src="./neuralnet.js"></script>
+    <style>
+      /* Center the table horizontally and vertically */
+      body {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      h1 {
+        margin-bottom: 0;
+      }
+    </style>
   </head>
   <body>
     <h1>Digit Recognition</h1>
@@ -49,8 +68,12 @@
           <button id="btn_clear">Clear</button>
         </td>
         <td>
-          Recognized: <span id="result" style="font-size: xx-large"></span>
+          Recognized: <span id="result" style="font-size: xx-large">_</span>
         </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="text-align: center;">Created by <a href="https://github.com/elm200">Eiji Sakai</a></td>
       </tr>
     </table>
   </body>
